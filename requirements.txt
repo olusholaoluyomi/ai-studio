@@ -17,9 +17,10 @@ torch
 torchaudio
 
 # ── Speech recognition ────────────────────────────────────────────────────────
-# Install from git — the PyPI wheel fails with pkg_resources on newer pip
 openai-whisper @ git+https://github.com/openai/whisper.git
+whisper-timestamped>=1.15.0
 faster-whisper>=1.1.0
+whisperx>=3.1.0
 ctranslate2
 ffmpeg-python==0.2.0
 librosa==0.10.1
@@ -31,6 +32,12 @@ pyworld==0.3.4
 edge-tts
 python-iso639
 pysubs2
+phonemizer
+kokoro
+misaki[en]
+misaki[ja]
+misaki[zh]
+f5-tts>=1.0.0
 
 # ── Translation & NLP ─────────────────────────────────────────────────────────
 deep-translator
@@ -47,6 +54,7 @@ imageio-ffmpeg>=0.4.9
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
 huggingface-hub>=0.27.1
+cached_path>=1.6.0
 pandas>=2.0.0
 matplotlib
 tqdm
