@@ -19,9 +19,9 @@ torchaudio
 # ── Speech recognition ────────────────────────────────────────────────────────
 openai-whisper @ git+https://github.com/openai/whisper.git
 whisper-timestamped>=1.15.0
-faster-whisper==1.0.3
+faster-whisper
 whisperx>=3.1.0
-ctranslate2>=3.20.0,<4.0.0
+ctranslate2
 ffmpeg-python==0.2.0
 librosa==0.10.1
 pydub==0.25.1
