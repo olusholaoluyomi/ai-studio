@@ -8,6 +8,7 @@ sdk_version: 5.14.0
 app_file: app.py
 pinned: true
 license: mit
+python_version: "3.11"
 short_description: AI video, voice cloning & TTS in 100+ languages
 tags:
   - audio
