@@ -2,6 +2,10 @@
 # HF Spaces uses this file automatically (named requirements.txt at root).
 # Split into tiers so CPU spaces don't crash trying to install CUDA wheels.
 
+# ── Build tools (must be first) ───────────────────────────────────────────────
+setuptools>=68.0
+wheel
+
 # ── Core (CPU + GPU) ──────────────────────────────────────────────────────────
 gradio==5.14.0
 numpy<2
