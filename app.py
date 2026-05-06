@@ -24,11 +24,32 @@ sys.path.insert(0, str(VOICE_PRO))
 sys.path.insert(0, str(VOICE_PRO / "third_party" / "Matcha-TTS"))
 
 # ── stub broken native libs BEFORE voice-pro imports them ───────────────────
+import types
+import sys
+
 def _stub_module(name: str, **attrs):
     mod = types.ModuleType(name)
     mod.__dict__.update(attrs)
     sys.modules[name] = mod
     return mod
+
+# Stub missing torchaudio.AudioMetaData (removed in torchaudio 2.1+)
+try:
+    import torchaudio
+    if not hasattr(torchaudio, "AudioMetaData"):
+        class _DummyAudioMetaData: pass
+        torchaudio.AudioMetaData = getattr(torchaudio.backend.common, "AudioMetaData", _DummyAudioMetaData)
+except Exception:
+    pass
+
+# RVC requires a massive GPU installation. Stub it so it doesn't crash tabs,
+# but it will gracefully fail if used on CPU.
+_stub_module("rvc")
+_stub_module("rvc.lib")
+_stub_module("rvc.lib.tools")
+_stub_module("rvc.lib.tools.prerequisites_download", prequisites_download_pipeline=lambda *a, **kw: None)
+_stub_module("rvc.infer")
+_stub_module("rvc.infer.infer", VoiceConverter=type("VoiceConverter", (), {"infer_pipeline": lambda *a, **kw: None}))
 
 
 # ctranslate2: Two failure modes on HF CPU spaces:
