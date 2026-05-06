@@ -1,0 +1,36 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+
+# AI model weights (large binaries — download via make models)
+models/
+
+# Voice-Pro runtime directories
+voice-pro/outputs/
+voice-pro/workspace/
+voice-pro/model/
+
+# Generated outputs
+outputs/
+workspace/
+*.mp4
+*.wav
+*.mp3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

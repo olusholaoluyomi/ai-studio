@@ -1,0 +1,3 @@
+[submodule "voice-pro"]
+	path = voice-pro
+	url = https://github.com/abus-aikorea/voice-pro.git

@@ -1,0 +1,74 @@
+# AI Studio — master settings
+# Values here can be overridden by environment variables.
+
+studio:
+  port: 7860
+  host: "0.0.0.0"
+  share: false
+  open_browser: true
+  queue_concurrency: 2
+
+voice_pro:
+  # Whisper model to use by default
+  # Options: tiny, base, small, medium, large-v2, large-v3
+  whisper_model: "large-v3"
+  # ASR compute type: float16 | int8 | float32
+  compute_type: "float16"
+  # Denoise level: 0 (none) | 1 (mild) | 2 (strong)
+  denoise_level: 1
+  # TTS default engine
+  # Options: edge-tts | f5-tts | cosyvoice | kokoro
+  default_tts: "edge-tts"
+  # Max media duration in seconds (0 = no limit)
+  max_duration: 0
+
+video_generation:
+  # Default model for text-to-video
+  # Options: cogvideox | animatediff | modelscope
+  default_model: "modelscope"
+  cogvideox:
+    model_id: "THUDM/CogVideoX-2b"
+    num_frames: 49
+    fps: 8
+    guidance_scale: 6.0
+    num_inference_steps: 50
+  animatediff:
+    base_model: "stable-diffusion-v1-5/stable-diffusion-v1-5"
+    adapter_id: "guoyww/animatediff-motion-adapter-v1-5-2"
+    num_frames: 16
+    fps: 8
+    guidance_scale: 7.5
+    num_inference_steps: 25
+  modelscope:
+    model_id: "damo-vilab/text-to-video-ms-1.7b"
+    num_inference_steps: 40
+
+audio_generation:
+  musicgen:
+    # Options: small | medium | large | melody
+    model_size: "small"
+    default_duration: 8
+  audiogen:
+    default_duration: 5
+
+languages:
+  # Languages made available in the studio UI (ISO 639-1 codes)
+  # "all" enables all 100+ supported languages
+  tts_languages: "all"
+  asr_languages: "all"
+  translation_languages: "all"
+
+models:
+  # Root directory for downloaded model weights
+  # Defaults to <project-root>/models at runtime
+  root: "models"
+  # Pre-download models on startup (slower start, faster first inference)
+  preload:
+    whisper: false
+    demucs: true
+    edge_tts: true
+    kokoro: true
+    cosyvoice: false
+    f5_tts: false
+    cogvideox: false
+    musicgen: false
