@@ -22,9 +22,11 @@ torchaudio
 # (v4.5+ requires cuDNN v9 which is not present on HF CPU spaces)
 ctranslate2==4.4.0
 faster-whisper==1.1.0
+# av>=12.0.0 has prebuilt manylinux wheels; av<=11 has source-only (needs libav-dev headers)
+av>=12.0.0
 openai-whisper @ git+https://github.com/openai/whisper.git
 whisper-timestamped>=1.15.0
-whisperx>=3.1.0
+whisperx==3.3.1
 ffmpeg-python==0.2.0
 librosa==0.10.1
 pydub==0.25.1
