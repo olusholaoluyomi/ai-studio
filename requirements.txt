@@ -1,93 +1,54 @@
 # HuggingFace Spaces — requirements
-# HF Spaces uses this file automatically (named requirements.txt at root).
-# Split into tiers so CPU spaces don't crash trying to install CUDA wheels.
+# Lean build: heavy GPU-only packages (f5-tts, cosyvoice, audiocraft, demucs)
+# are imported lazily in app.py and fail gracefully on CPU tier.
 
-# ── Build tools (must be first) ───────────────────────────────────────────────
+# ── Build tools ────────────────────────────────────────────────────────────────
 setuptools>=68.0
 wheel
 
-# ── Core (CPU + GPU) ──────────────────────────────────────────────────────────
-gradio==5.14.0
+# ── Core ──────────────────────────────────────────────────────────────────────
 numpy<2
 pydantic==2.9.1
-pyyaml>=6.0
 python-dotenv>=1.0.0
+pyyaml>=6.0
 rich>=13.0
 
-# ── Audio processing ──────────────────────────────────────────────────────────
-openai-whisper==20240930
-faster-whisper==1.1.0
-whisperx==3.3.1
-whisper-timestamped==1.15.8
+# ── Speech recognition (faster-whisper replaces openai-whisper) ───────────────
+faster-whisper>=1.1.0
 ffmpeg-python==0.2.0
 librosa==0.10.1
 pydub==0.25.1
 soundfile
 pyworld==0.3.4
-demucs==4.0.1
 
 # ── TTS ───────────────────────────────────────────────────────────────────────
 edge-tts
-kokoro
-misaki[en]
-misaki[ja]
-misaki[zh]
-f5-tts==1.0.8
+python-iso639
+pysubs2
 
 # ── Translation & NLP ─────────────────────────────────────────────────────────
 deep-translator
-python-iso639
-pysubs2
 lingua-language-detector
 azure-ai-translation-text==1.0.0b1
 azure-cognitiveservices-speech
 
-# ── Video generation (diffusers) ──────────────────────────────────────────────
+# ── Video / image generation ──────────────────────────────────────────────────
 diffusers>=0.29.0
 accelerate>=0.26.0
 transformers>=4.40.0
 imageio[ffmpeg]>=2.34.0
 imageio-ffmpeg>=0.4.9
 
-# ── Audio generation ─────────────────────────────────────────────────────────
-audiocraft>=1.3.0
-
-# ── ML utilities ─────────────────────────────────────────────────────────────
+# ── Utilities ─────────────────────────────────────────────────────────────────
 huggingface-hub>=0.27.1
-cached_path==1.6.7
-yt-dlp==2025.11.12
 pandas>=2.0.0
 matplotlib
 tqdm
-markdown
 structlog
-py-cpuinfo==9.0.0
-wget
+yt-dlp
 more_itertools
 json5
-inflect==7.3.1
-uuid
-
-# ── CosyVoice ────────────────────────────────────────────────────────────────
-conformer==0.3.2
-gdown==5.1.0
-grpcio==1.57.0
-grpcio-tools==1.57.0
-HyperPyYAML==1.2.2
-lightning==2.2.4
-modelscope==1.15.0
-tensorboard==2.14.0
-fastapi-cli==0.0.4
-WeTextProcessing==1.0.3
-diffusers==0.29.0
-
-# ── spaCy ─────────────────────────────────────────────────────────────────────
-# Install without CUDA extension on HF (GPU spaces get it via packages.txt)
-spacy==3.7.5
-
-# ── Websocket / live features ─────────────────────────────────────────────────
+inflect>=7.0.0
 websockets
 websocket-client
-kaldialign
 jiwer
-evaluate
