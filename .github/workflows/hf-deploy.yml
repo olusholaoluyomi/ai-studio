@@ -23,5 +23,7 @@ jobs:
         run: |
           git config --global user.email "deploy@github-actions.com"
           git config --global user.name "GitHub Actions"
-          git remote add hf https://olusholaoluyomi:${HF_TOKEN}@huggingface.co/spaces/olusholaoluyomi/ai-studio
+          git config --global credential.helper store
+          echo "https://olusholaoluyomi:${HF_TOKEN}@huggingface.co" > ~/.git-credentials
+          git remote add hf https://huggingface.co/spaces/olusholaoluyomi/ai-studio
           git push hf HEAD:main --force
