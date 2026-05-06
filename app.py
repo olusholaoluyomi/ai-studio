@@ -35,7 +35,7 @@ def _stub_module(name: str, **attrs):
 try:
     import ctranslate2  # noqa: F401
 except (ImportError, OSError):
-    _ct2 = _stub_module(
+    _stub_module(
         "ctranslate2",
         Translator=None,
         Generator=None,
@@ -44,9 +44,27 @@ except (ImportError, OSError):
     )
 
 try:
-    import winreg  # noqa: F401 — Windows only, always stub on Linux
+    import winreg  # noqa: F401
 except (ImportError, ModuleNotFoundError):
     _stub_module("winreg")
+
+try:
+    import modelscope  # noqa: F401
+except (ImportError, OSError):
+    _ms = _stub_module("modelscope", snapshot_download=lambda *a, **kw: None)
+    _stub_module("modelscope.hub.snapshot_download", snapshot_download=lambda *a, **kw: None)
+
+# cosyvoice lives inside voice-pro but depends on modelscope + heavy GPU libs.
+# Stub the whole package so the import chain doesn't crash on CPU.
+try:
+    from cosyvoice.cli.cosyvoice import CosyVoice2  # noqa: F401
+except Exception:
+    _cv = _stub_module("cosyvoice")
+    _stub_module("cosyvoice.cli")
+    _stub_module("cosyvoice.cli.cosyvoice", CosyVoice2=None)
+    _stub_module("cosyvoice.utils")
+    _stub_module("cosyvoice.utils.file_utils", load_wav=lambda *a, **kw: None)
+    _stub_module("cosyvoice.utils.common", set_all_random_seed=lambda *a, **kw: None)
 
 # ── logging ─────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.WARNING)

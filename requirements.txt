@@ -27,8 +27,10 @@ librosa==0.10.1
 pydub==0.25.1
 soundfile
 pyworld==0.3.4
+noisereduce
 
 # ── TTS ───────────────────────────────────────────────────────────────────────
+spacy>=3.7.0
 edge-tts
 python-iso639
 pysubs2
