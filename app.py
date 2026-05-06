@@ -61,7 +61,7 @@ except (ImportError, OSError, AttributeError, Exception) as _ct2_err:
 
 try:
     import modelscope  # noqa: F401
-except (ImportError, OSError):
+except Exception:
     _ms = _stub_module("modelscope", snapshot_download=lambda *a, **kw: None)
     _stub_module("modelscope.hub.snapshot_download", snapshot_download=lambda *a, **kw: None)
 

@@ -1,4 +1,7 @@
-# HuggingFace Spaces — requirements (this is the file HF uses automatically)
+# HuggingFace Spaces — requirements.txt
+# GPU-only packages (audiocraft, modelscope, cosyvoice deps) are EXCLUDED:
+# audiocraft pins torch==2.1.x which conflicts with transformers 4.40+
+# modelscope/cosyvoice are GPU-only and also conflict with torch versions
 
 # ── Build tools ────────────────────────────────────────────────────────────────
 setuptools>=68.0
@@ -12,17 +15,15 @@ python-dotenv>=1.0.0
 pyyaml>=6.0
 rich>=13.0
 
-# ── PyTorch CPU build ─────────────────────────────────────────────────────────
+# ── PyTorch CPU — let pip resolve freely (need >=2.2 for transformers 4.40+) ──
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch
+torch>=2.2.0
 torchaudio
 
-# ── Speech recognition ────────────────────────────────────────────────────────
-# ctranslate2 4.4.0 is the last version that works on CPU without cuDNN v9
-# (v4.5+ requires cuDNN v9 which is not present on HF CPU spaces)
+# ── Speech recognition ─────────────────────────────────────────────────────────
+# ctranslate2 4.4.0: last version that works on HF CPU (no cuDNN v9 required)
 ctranslate2==4.4.0
 faster-whisper==1.1.0
-# av>=12.0.0 has prebuilt manylinux wheels; av<=11 has source-only (needs libav-dev headers)
 av>=12.0.0
 openai-whisper @ git+https://github.com/openai/whisper.git
 whisper-timestamped>=1.15.0
@@ -31,39 +32,38 @@ ffmpeg-python==0.2.0
 librosa==0.10.1
 pydub==0.25.1
 soundfile
-pyworld==0.3.4
 noisereduce
 
-# ── TTS ───────────────────────────────────────────────────────────────────────
-spacy>=3.7.0
+# ── TTS ────────────────────────────────────────────────────────────────────────
+spacy>=3.7.0,<3.9.0
 edge-tts
 python-iso639
 pysubs2
 phonemizer
 kokoro
 misaki[en]
-misaki[ja]
-misaki[zh]
+# misaki[ja] and misaki[zh] excluded: pyopenjtalk/jieba need heavy compilation
 f5-tts>=1.0.0
 
-# ── Translation & NLP ─────────────────────────────────────────────────────────
+# ── Translation & NLP ──────────────────────────────────────────────────────────
 deep-translator
 lingua-language-detector
 azure-ai-translation-text==1.0.0b1
 azure-cognitiveservices-speech
 
-# ── Video / image generation ──────────────────────────────────────────────────
+# ── Video / image generation ───────────────────────────────────────────────────
+# diffusers 0.30+ uses torch.xpu (requires PyTorch 2.4+); pin to 0.29.0
 diffusers==0.29.0
 accelerate>=0.26.0
-# transformers 5.x requires torch>=2.4; HF CPU spaces have torch 2.1.x
+# transformers 5.x requires torch>=2.4 and uses APIs not in 2.2.x
 transformers>=4.40.0,<5.0.0
 imageio[ffmpeg]>=2.34.0
 imageio-ffmpeg>=0.4.9
 
-# ── Audio generation (GPU-only, installed for import; won't run on CPU) ────────
-audiocraft
+# ── Audio separation ───────────────────────────────────────────────────────────
+demucs==4.0.1
 
-# ── Utilities ─────────────────────────────────────────────────────────────────
+# ── Utilities ──────────────────────────────────────────────────────────────────
 huggingface-hub>=0.27.1
 cached_path>=1.6.0
 pandas>=2.0.0
@@ -83,18 +83,3 @@ wget
 uuid
 kaldialign
 evaluate
-
-# ── CosyVoice dependencies ────────────────────────────────────────────────────
-conformer==0.3.2
-gdown==5.1.0
-grpcio==1.57.0
-grpcio-tools==1.57.0
-HyperPyYAML==1.2.2
-lightning==2.2.4
-modelscope==1.15.0
-tensorboard==2.14.0
-WeTextProcessing==1.0.3
-
-# ── Websocket / live features ─────────────────────────────────────────────────
-websockets
-websocket-client
