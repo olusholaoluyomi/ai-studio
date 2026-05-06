@@ -56,7 +56,7 @@ except (ImportError, OSError, AttributeError, Exception) as _ct2_err:
             _CT2_COMPUTE_TYPES_CUDA if device == "cuda" else _CT2_COMPUTE_TYPES_CPU
         ),
         # Stub the models sub-module so any direct ctranslate2.models access doesn't crash
-        models=_stub_module("ctranslate2.models"),
+        models=_stub_module("ctranslate2.models", WhisperGenerationResult=None, Whisper=None),
     )
 
 try:
@@ -253,6 +253,13 @@ def build_app() -> gr.Blocks:
     voice_tabs  = _load_voice_pro(user_config)
 
     # Initialise Voice Pro — only download what's needed for CPU tier
+    # Symlink model directory so HF space running at ROOT can find model/mdxnet-model/model_data.json
+    try:
+        if not os.path.exists(ROOT / "model"):
+            os.symlink(VOICE_PRO / "model", ROOT / "model")
+    except Exception as e:
+        print(f"[WARN] Failed to symlink model directory: {e}")
+
     try:
         os.chdir(VOICE_PRO)
         from app.abus_hf import AbusHuggingFace
