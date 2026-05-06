@@ -157,11 +157,19 @@ gpu_badge = (
     '<span class="gpu-badge gpu-off">CPU-only mode — video generation disabled</span>'
 )
 
+def _render(fn, label: str) -> None:
+    """Call a tab builder, showing a friendly error card if it crashes."""
+    try:
+        fn()
+    except Exception as exc:
+        gr.Markdown(f"> **{label} unavailable**\n>\n> `{exc}`")
+
+
 def build_app() -> gr.Blocks:
     user_config = _get_user_config()
     voice_tabs  = _load_voice_pro(user_config)
 
-    # Initialise Voice Pro model downloads
+    # Initialise Voice Pro — only download what's needed for CPU tier
     try:
         os.chdir(VOICE_PRO)
         from app.abus_hf import AbusHuggingFace
@@ -169,10 +177,11 @@ def build_app() -> gr.Blocks:
         from app.abus_path import path_workspace_folder, path_gradio_folder
         genuine_init()
         AbusHuggingFace.initialize(app_name="voice")
-        AbusHuggingFace.hf_download_models(file_type="demucs",   level=0)
         AbusHuggingFace.hf_download_models(file_type="edge-tts", level=0)
-        AbusHuggingFace.hf_download_models(file_type="kokoro",   level=0)
-        AbusHuggingFace.hf_download_models(file_type="cosyvoice",level=0)
+        if HAS_GPU:
+            AbusHuggingFace.hf_download_models(file_type="demucs",    level=0)
+            AbusHuggingFace.hf_download_models(file_type="kokoro",    level=0)
+            AbusHuggingFace.hf_download_models(file_type="cosyvoice", level=0)
         path_workspace_folder()
         path_gradio_folder()
         os.chdir(ROOT)
@@ -196,32 +205,32 @@ def build_app() -> gr.Blocks:
 
         # ── Voice & Speech ───────────────────────────────────────────────────
         with gr.Tab("🎙️ Dubbing Studio"):
-            voice_tabs["dubbing"]()
+            _render(voice_tabs["dubbing"], "Dubbing Studio")
 
         with gr.Tab("📝 Whisper Subtitles"):
-            voice_tabs["subtitle"]()
+            _render(voice_tabs["subtitle"], "Whisper Subtitles")
 
         with gr.Tab("🌐 Translation"):
-            voice_tabs["translate"]()
+            _render(voice_tabs["translate"], "Translation")
 
         with gr.Tab("🗣️ Speech Generation"):
             with gr.Tabs():
                 with gr.Tab("Edge-TTS  (400+ voices, 100+ langs)"):
-                    voice_tabs["edge_tts"]()
+                    _render(voice_tabs["edge_tts"], "Edge-TTS")
                 with gr.Tab("F5-TTS  (voice cloning · single)"):
-                    voice_tabs["f5_single"]()
+                    _render(voice_tabs["f5_single"], "F5-TTS Single")
                 with gr.Tab("F5-TTS  (voice cloning · multi)"):
-                    voice_tabs["f5_multi"]()
+                    _render(voice_tabs["f5_multi"], "F5-TTS Multi")
                 with gr.Tab("CosyVoice  (zero-shot cloning)"):
-                    voice_tabs["cosyvoice"]()
+                    _render(voice_tabs["cosyvoice"], "CosyVoice")
                 with gr.Tab("Kokoro  (high-quality TTS)"):
-                    voice_tabs["kokoro"]()
+                    _render(voice_tabs["kokoro"], "Kokoro")
 
         with gr.Tab("🎵 Audio Separation"):
-            voice_tabs["demixing"]()
+            _render(voice_tabs["demixing"], "Audio Separation")
 
         with gr.Tab("🔄 RVC Voice Conversion"):
-            voice_tabs["rvc"]()
+            _render(voice_tabs["rvc"], "RVC Voice Conversion")
 
         # ── Video Generation (GPU-gated) ─────────────────────────────────────
         with gr.Tab("🎬 Video Generation"):
