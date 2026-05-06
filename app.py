@@ -44,11 +44,6 @@ except (ImportError, OSError):
     )
 
 try:
-    import winreg  # noqa: F401
-except (ImportError, ModuleNotFoundError):
-    _stub_module("winreg")
-
-try:
     import modelscope  # noqa: F401
 except (ImportError, OSError):
     _ms = _stub_module("modelscope", snapshot_download=lambda *a, **kw: None)
