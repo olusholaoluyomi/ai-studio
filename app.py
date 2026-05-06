@@ -135,9 +135,6 @@ print(f"[AI Studio] GPU: {GPU_NAME if HAS_GPU else 'CPU-only mode'}")
 # ── Gradio ───────────────────────────────────────────────────────────────────
 import gradio as gr
 
-# ── Studio extensions ────────────────────────────────────────────────────────
-from extensions.video_generation import video_generation_tab
-from extensions.audio_generation import audio_generation_tab
 
 # ── Voice Pro tabs (graceful degradation per feature) ────────────────────────
 
@@ -325,7 +322,11 @@ def build_app() -> gr.Blocks:
         # ── Video Generation (GPU-gated) ─────────────────────────────────────
         with gr.Tab("🎬 Video Generation"):
             if HAS_GPU:
-                video_generation_tab()
+                try:
+                    from extensions.video_generation import video_generation_tab
+                    video_generation_tab()
+                except Exception as exc:
+                    gr.Markdown(f"> **Video Generation unavailable**\n>\n> `{exc}`")
             else:
                 gr.Markdown("""
 ## Video Generation — GPU Required
@@ -348,7 +349,11 @@ To enable AI video generation:
         # ── Music & SFX ──────────────────────────────────────────────────────
         with gr.Tab("🎶 Music & SFX"):
             if HAS_GPU:
-                audio_generation_tab()
+                try:
+                    from extensions.audio_generation import audio_generation_tab
+                    audio_generation_tab()
+                except Exception as exc:
+                    gr.Markdown(f"> **Music & SFX unavailable**\n>\n> `{exc}`")
             else:
                 gr.Markdown("""
 ## Music & SFX Generation — GPU Required

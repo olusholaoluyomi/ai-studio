@@ -53,9 +53,10 @@ azure-ai-translation-text==1.0.0b1
 azure-cognitiveservices-speech
 
 # ── Video / image generation ──────────────────────────────────────────────────
-diffusers>=0.29.0
+diffusers==0.29.0
 accelerate>=0.26.0
-transformers>=4.40.0
+# transformers 5.x requires torch>=2.4; HF CPU spaces have torch 2.1.x
+transformers>=4.40.0,<5.0.0
 imageio[ffmpeg]>=2.34.0
 imageio-ffmpeg>=0.4.9
 
