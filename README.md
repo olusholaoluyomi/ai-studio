@@ -8,7 +8,7 @@ sdk_version: 5.14.0
 app_file: app.py
 pinned: true
 license: mit
-short_description: Video generation · Voice cloning · TTS 100+ languages · Music
+short_description: AI video, voice cloning & TTS in 100+ languages
 tags:
   - audio
   - video
