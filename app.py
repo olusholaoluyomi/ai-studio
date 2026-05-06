@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import sys
+import types
 import logging
 import platform
 from pathlib import Path
@@ -21,6 +22,31 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(VOICE_PRO))
 sys.path.insert(0, str(VOICE_PRO / "third_party" / "Matcha-TTS"))
+
+# ── stub broken native libs BEFORE voice-pro imports them ───────────────────
+# ctranslate2 requires executable-stack kernel permission which HF CPU
+# containers block. Stub it so imports succeed; inference fails gracefully.
+def _stub_module(name: str, **attrs):
+    mod = types.ModuleType(name)
+    mod.__dict__.update(attrs)
+    sys.modules[name] = mod
+    return mod
+
+try:
+    import ctranslate2  # noqa: F401
+except (ImportError, OSError):
+    _ct2 = _stub_module(
+        "ctranslate2",
+        Translator=None,
+        Generator=None,
+        StorageView=None,
+        get_supported_compute_types=lambda *a, **kw: [],
+    )
+
+try:
+    import winreg  # noqa: F401 — Windows only, always stub on Linux
+except (ImportError, ModuleNotFoundError):
+    _stub_module("winreg")
 
 # ── logging ─────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.WARNING)
