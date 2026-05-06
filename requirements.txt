@@ -1,6 +1,4 @@
 # HuggingFace Spaces — requirements
-# Lean build: heavy GPU-only packages (f5-tts, cosyvoice, audiocraft, demucs)
-# are imported lazily in app.py and fail gracefully on CPU tier.
 
 # ── Build tools ────────────────────────────────────────────────────────────────
 setuptools>=68.0
@@ -13,8 +11,16 @@ python-dotenv>=1.0.0
 pyyaml>=6.0
 rich>=13.0
 
-# ── Speech recognition (faster-whisper replaces openai-whisper) ───────────────
+# ── PyTorch CPU build ─────────────────────────────────────────────────────────
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchaudio
+
+# ── Speech recognition ────────────────────────────────────────────────────────
+# Install from git — the PyPI wheel fails with pkg_resources on newer pip
+openai-whisper @ git+https://github.com/openai/whisper.git
 faster-whisper>=1.1.0
+ctranslate2
 ffmpeg-python==0.2.0
 librosa==0.10.1
 pydub==0.25.1
