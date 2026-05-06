@@ -1,0 +1,27 @@
+name: Deploy to HuggingFace Spaces
+
+on:
+  push:
+    branches:
+      - main
+      - claude/ai-media-generation-ySbxe
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout with submodules
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          lfs: true
+
+      - name: Push to HuggingFace Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "deploy@github-actions.com"
+          git config --global user.name "GitHub Actions"
+          git remote add hf https://olusholaoluyomi:${HF_TOKEN}@huggingface.co/spaces/olusholaoluyomi/ai-studio
+          git push hf HEAD:main --force
