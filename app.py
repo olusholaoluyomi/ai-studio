@@ -24,23 +24,39 @@ sys.path.insert(0, str(VOICE_PRO))
 sys.path.insert(0, str(VOICE_PRO / "third_party" / "Matcha-TTS"))
 
 # ── stub broken native libs BEFORE voice-pro imports them ───────────────────
-# ctranslate2 requires executable-stack kernel permission which HF CPU
-# containers block. Stub it so imports succeed; inference fails gracefully.
 def _stub_module(name: str, **attrs):
     mod = types.ModuleType(name)
     mod.__dict__.update(attrs)
     sys.modules[name] = mod
     return mod
 
+
+# ctranslate2: Two failure modes on HF CPU spaces:
+#   1. ImportError / OSError  — library not installed or kernel rejects exec-stack
+#   2. AttributeError         — library installs but version is incompatible
+#      (e.g. v4.5+ requires cuDNN v9 which isn't present; .models sub-module missing)
+# We catch both and provide a safe stub with CPU compute types hardcoded.
+_CT2_COMPUTE_TYPES_CPU = ["int8", "int8_float32", "float32"]
+_CT2_COMPUTE_TYPES_CUDA = ["float16", "int8_float16", "int8", "float32"]
+
 try:
     import ctranslate2  # noqa: F401
-except (ImportError, OSError):
+    # Smoke-test: verify the API we actually use is present and callable
+    _test = ctranslate2.get_supported_compute_types("cpu")
+    if not isinstance(_test, (list, tuple, set)):
+        raise AttributeError("get_supported_compute_types returned unexpected type")
+except (ImportError, OSError, AttributeError, Exception) as _ct2_err:
+    print(f"[AI Studio] ctranslate2 unavailable or incompatible ({_ct2_err}). Using CPU stub.")
     _stub_module(
         "ctranslate2",
         Translator=None,
         Generator=None,
         StorageView=None,
-        get_supported_compute_types=lambda *a, **kw: [],
+        get_supported_compute_types=lambda device="cpu", **kw: (
+            _CT2_COMPUTE_TYPES_CUDA if device == "cuda" else _CT2_COMPUTE_TYPES_CPU
+        ),
+        # Stub the models sub-module so any direct ctranslate2.models access doesn't crash
+        models=_stub_module("ctranslate2.models"),
     )
 
 try:
@@ -60,6 +76,37 @@ except Exception:
     _stub_module("cosyvoice.utils")
     _stub_module("cosyvoice.utils.file_utils", load_wav=lambda *a, **kw: None)
     _stub_module("cosyvoice.utils.common", set_all_random_seed=lambda *a, **kw: None)
+
+# ── Patch voice-pro/app/abus_asr_faster_whisper.py at runtime ────────────────
+# voice-pro is an upstream git submodule — we can't push changes to it.
+# Instead we monkey-patch the FasterWhisperInference class after import so that
+# available_compute_types() never crashes even if ctranslate2 is stubbed/broken.
+def _patch_faster_whisper():
+    try:
+        import app.abus_asr_faster_whisper as _fw_mod
+        import ctranslate2 as _ct2
+
+        @staticmethod
+        def _safe_compute_types():
+            try:
+                import torch
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+            except Exception:
+                device = "cpu"
+            try:
+                raw = _ct2.get_supported_compute_types(device)
+                types_ordered = []
+                for t in ["float32", "float16", "int16_float32", "int16_float16",
+                           "int8_float32", "int8_float16", "int16", "int8"]:
+                    if t in raw:
+                        types_ordered.append(t)
+                return types_ordered if types_ordered else ["int8", "float32"]
+            except Exception:
+                return ["int8", "float32"]
+
+        _fw_mod.FasterWhisperInference.available_compute_types = _safe_compute_types
+    except Exception as e:
+        print(f"[AI Studio] Could not patch FasterWhisperInference: {e}")
 
 # ── logging ─────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.WARNING)
@@ -214,6 +261,10 @@ def build_app() -> gr.Blocks:
         from app.abus_hf import AbusHuggingFace
         from app.abus_genuine import genuine_init
         from app.abus_path import path_workspace_folder, path_gradio_folder
+
+        # Apply monkey-patch AFTER voice-pro modules are importable
+        _patch_faster_whisper()
+
         genuine_init()
         AbusHuggingFace.initialize(app_name="voice")
         AbusHuggingFace.hf_download_models(file_type="edge-tts", level=0)

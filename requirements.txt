@@ -1,10 +1,11 @@
-# HuggingFace Spaces — requirements
+# HuggingFace Spaces — requirements (this is the file HF uses automatically)
 
 # ── Build tools ────────────────────────────────────────────────────────────────
 setuptools>=68.0
 wheel
 
 # ── Core ──────────────────────────────────────────────────────────────────────
+gradio>=5.14.0,<6
 numpy<2
 pydantic==2.9.1
 python-dotenv>=1.0.0
@@ -17,11 +18,13 @@ torch
 torchaudio
 
 # ── Speech recognition ────────────────────────────────────────────────────────
-openai-whisper @ git+https://github.com/openai/whisper.git
+# ctranslate2 4.4.0 is the last version that works on CPU without cuDNN v9
+# (v4.5+ requires cuDNN v9 which is not present on HF CPU spaces)
+ctranslate2==4.4.0
+faster-whisper==1.1.0
+openai-whisper==20240930
 whisper-timestamped>=1.15.0
-faster-whisper
 whisperx>=3.1.0
-ctranslate2
 ffmpeg-python==0.2.0
 librosa==0.10.1
 pydub==0.25.1
@@ -54,6 +57,9 @@ transformers>=4.40.0
 imageio[ffmpeg]>=2.34.0
 imageio-ffmpeg>=0.4.9
 
+# ── Audio generation (GPU-only, installed for import; won't run on CPU) ────────
+audiocraft
+
 # ── Utilities ─────────────────────────────────────────────────────────────────
 huggingface-hub>=0.27.1
 cached_path>=1.6.0
@@ -61,10 +67,31 @@ pandas>=2.0.0
 matplotlib
 tqdm
 structlog
-yt-dlp
+yt-dlp>=2024.12.13
 more_itertools
 json5
 inflect>=7.0.0
 websockets
 websocket-client
 jiwer
+markdown
+py-cpuinfo==9.0.0
+wget
+uuid
+kaldialign
+evaluate
+
+# ── CosyVoice dependencies ────────────────────────────────────────────────────
+conformer==0.3.2
+gdown==5.1.0
+grpcio==1.57.0
+grpcio-tools==1.57.0
+HyperPyYAML==1.2.2
+lightning==2.2.4
+modelscope==1.15.0
+tensorboard==2.14.0
+WeTextProcessing==1.0.3
+
+# ── Websocket / live features ─────────────────────────────────────────────────
+websockets
+websocket-client
