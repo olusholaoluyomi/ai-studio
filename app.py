@@ -38,9 +38,17 @@ try:
     import torchaudio
     if not hasattr(torchaudio, "AudioMetaData"):
         class _DummyAudioMetaData: pass
-        torchaudio.AudioMetaData = getattr(torchaudio.backend.common, "AudioMetaData", _DummyAudioMetaData)
-except Exception:
-    pass
+        torchaudio.AudioMetaData = _DummyAudioMetaData
+except Exception as e:
+    print(f"[WARN] Failed to stub torchaudio: {e}")
+
+# Stub phonemizer EspeakWrapper.set_data_path (removed/changed in newer versions)
+try:
+    from phonemizer.backend.espeak.wrapper import EspeakWrapper
+    if not hasattr(EspeakWrapper, "set_data_path"):
+        EspeakWrapper.set_data_path = lambda *args, **kw: None
+except Exception as e:
+    print(f"[WARN] Failed to stub phonemizer: {e}")
 
 # RVC requires a massive GPU installation. Stub it so it doesn't crash tabs,
 # but it will gracefully fail if used on CPU.
