@@ -22,7 +22,7 @@ torchaudio
 # (v4.5+ requires cuDNN v9 which is not present on HF CPU spaces)
 ctranslate2==4.4.0
 faster-whisper==1.1.0
-openai-whisper==20240930
+openai-whisper @ git+https://github.com/openai/whisper.git
 whisper-timestamped>=1.15.0
 whisperx>=3.1.0
 ffmpeg-python==0.2.0
