@@ -72,25 +72,25 @@ def _load_voice_pro(user_config):
         from app.tab_gulliver import gulliver_tab
         tabs["dubbing"] = lambda: gulliver_tab(user_config)
     except Exception as e:
-        tabs["dubbing"] = lambda: gr.Markdown(f"Dubbing Studio unavailable on this hardware.\n\n`{e}`")
+        tabs["dubbing"] = lambda msg=str(e): gr.Markdown(f"Dubbing Studio unavailable on this hardware.\n\n`{msg}`")
 
     try:
         from app.tab_subtitle import subtitle_tab
         tabs["subtitle"] = lambda: subtitle_tab(user_config)
     except Exception as e:
-        tabs["subtitle"] = lambda: gr.Markdown(f"Whisper subtitles unavailable.\n\n`{e}`")
+        tabs["subtitle"] = lambda msg=str(e): gr.Markdown(f"Whisper subtitles unavailable.\n\n`{msg}`")
 
     try:
         from app.tab_translate import translate_tab
         tabs["translate"] = lambda: translate_tab(user_config)
     except Exception as e:
-        tabs["translate"] = lambda: gr.Markdown(f"Translation unavailable.\n\n`{e}`")
+        tabs["translate"] = lambda msg=str(e): gr.Markdown(f"Translation unavailable.\n\n`{msg}`")
 
     try:
         from app.tab_tts_edge import tts_edge_tab
         tabs["edge_tts"] = lambda: tts_edge_tab(user_config)
     except Exception as e:
-        tabs["edge_tts"] = lambda: gr.Markdown(f"Edge-TTS unavailable.\n\n`{e}`")
+        tabs["edge_tts"] = lambda msg=str(e): gr.Markdown(f"Edge-TTS unavailable.\n\n`{msg}`")
 
     try:
         from app.tab_tts_f5_single import tts_f5_single_tab
@@ -98,31 +98,33 @@ def _load_voice_pro(user_config):
         tabs["f5_single"] = lambda: tts_f5_single_tab(user_config)
         tabs["f5_multi"]  = lambda: tts_f5_multi_tab(user_config)
     except Exception as e:
-        tabs["f5_single"] = tabs["f5_multi"] = lambda: gr.Markdown(f"F5-TTS requires GPU.\n\n`{e}`")
+        msg = str(e)
+        tabs["f5_single"] = lambda msg=msg: gr.Markdown(f"F5-TTS requires GPU.\n\n`{msg}`")
+        tabs["f5_multi"]  = lambda msg=msg: gr.Markdown(f"F5-TTS requires GPU.\n\n`{msg}`")
 
     try:
         from app.tab_tts_cosyvoice import tts_cosyvoice_tab
         tabs["cosyvoice"] = lambda: tts_cosyvoice_tab(user_config)
     except Exception as e:
-        tabs["cosyvoice"] = lambda: gr.Markdown(f"CosyVoice requires GPU (8 GB VRAM).\n\n`{e}`")
+        tabs["cosyvoice"] = lambda msg=str(e): gr.Markdown(f"CosyVoice requires GPU (8 GB VRAM).\n\n`{msg}`")
 
     try:
         from app.tab_tts_kokoro import tts_kokoro_tab
         tabs["kokoro"] = lambda: tts_kokoro_tab(user_config)
     except Exception as e:
-        tabs["kokoro"] = lambda: gr.Markdown(f"Kokoro unavailable.\n\n`{e}`")
+        tabs["kokoro"] = lambda msg=str(e): gr.Markdown(f"Kokoro unavailable.\n\n`{msg}`")
 
     try:
         from app.tab_demixing import demixing_tab
         tabs["demixing"] = lambda: demixing_tab(user_config)
     except Exception as e:
-        tabs["demixing"] = lambda: gr.Markdown(f"Audio separation unavailable.\n\n`{e}`")
+        tabs["demixing"] = lambda msg=str(e): gr.Markdown(f"Audio separation unavailable.\n\n`{msg}`")
 
     try:
         from app.tab_rvc import rvc_tab
         tabs["rvc"] = lambda: rvc_tab(user_config)
     except Exception as e:
-        tabs["rvc"] = lambda: gr.Markdown(f"RVC voice conversion unavailable.\n\n`{e}`")
+        tabs["rvc"] = lambda msg=str(e): gr.Markdown(f"RVC voice conversion unavailable.\n\n`{msg}`")
 
     return tabs
 
