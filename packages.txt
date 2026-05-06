@@ -1,0 +1,5 @@
+ffmpeg
+git
+libsndfile1
+libportaudio2
+espeak-ng

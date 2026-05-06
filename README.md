@@ -1,3 +1,26 @@
+---
+title: AI Studio
+emoji: 🎬
+colorFrom: indigo
+colorTo: purple
+sdk: gradio
+sdk_version: 5.14.0
+app_file: app.py
+pinned: true
+license: mit
+short_description: Video generation · Voice cloning · TTS 100+ languages · Music
+tags:
+  - audio
+  - video
+  - speech
+  - tts
+  - voice-cloning
+  - whisper
+  - gradio
+  - text-to-video
+  - music-generation
+---
+
 # AI Studio
 
 A unified, fully open-source AI media generation studio powered by
